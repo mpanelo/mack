@@ -6,18 +6,16 @@ Document = namedtuple("Document", "id name text")
 
 
 def batch_read(root, batch_size=100):
-    documents = []
     counter = 0
+    file_names = [os.path.join(path, file_name)
+                  for path, _, file_names in os.walk(root)
+                  for file_name in file_names]
 
-    for path, sub_dirs, file_names in os.walk(root):
-        for file_name in file_names:
-            abs_file_path = os.path.join(path, file_name)
-
-            with open(abs_file_path) as file:
-                documents.append(Document(id=counter, name=abs_file_path, text=file.read()))
-
-            if len(documents) > batch_size:
-                yield documents
-                documents = []
-
+    for i in range(0, len(file_names), batch_size):
+        batch_file_names = file_names[i:i+batch_size]
+        documents = []
+        for file_name in batch_file_names:
+            with open(file_name) as file:
+                documents.append(Document(id=counter, name=file_name, text=file.read()))
             counter += 1
+        yield documents
