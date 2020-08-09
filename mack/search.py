@@ -4,44 +4,30 @@ import collections
 TermRecord = collections.namedtuple('TermRecord', 'document_ids')
 
 
-class DictionaryIndex:
+class DictionaryInvertedIndex:
     def __init__(self):
-        self.index = {}
+        self._index = {}
 
-    def contains(self, key):
-        return key in self.index
+    def get(self, term):
+        return self._index[term] if term in self._index else TermRecord(document_ids=[])
 
     def terms(self):
-        return self.index.keys()
-
-    def __setitem__(self, key, value):
-        self.index[key] = value
-
-    def __getitem__(self, key):
-        return self.index[key]
-
-
-class InvertedIndex:
-    def __init__(self, index: DictionaryIndex):
-        self.index = index
+        return self._index.keys()
 
     def add(self, document):
         tokens = Tokenizer.tokenize(document.text)
 
         for token in tokens:
-            if not self.index.contains(token):
-                self.index[token] = TermRecord(document_ids=[])
+            if token not in self._index:
+                self._index[token] = TermRecord(document_ids=[])
 
-            term_record = self.index[token]
+            term_record = self._index[token]
 
             if not term_record.document_ids or term_record.document_ids[-1] != document.id:
                 term_record.document_ids.append(document.id)
 
-    def save(self, filename):
-        with open(filename, 'w') as file:
-            for term in sorted(self.index.terms()):
-                document_ids = [str(document_id) for document_id in self.index[term].document_ids]
-                file.write("{};{}\n".format(term, ','.join(document_ids)))
+    def clear(self):
+        self._index.clear()
 
 
 class Tokenizer:
