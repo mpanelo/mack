@@ -139,3 +139,11 @@ cython_debug/
 
 # Intellij
 .idea
+
+# Dataset
+mack/enron
+mack/enron_mail_20150507
+
+# Index segmentds
+mack/inverted_index_segments/*.index
+mack/*.index
