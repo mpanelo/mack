@@ -1,4 +1,4 @@
-from mack import search
+from mack import inverted_index
 from mack import fs
 import collections
 import heapq
@@ -24,7 +24,7 @@ class Writer:
         fs.clean_up_dir(dest)
         self.path_generator = UniquePathGenerator(dest)
 
-    def write(self, inverted_index: search.DictionaryInvertedIndex):
+    def write(self, inverted_index: inverted_index.DictionaryInvertedIndex):
         with open(self.path_generator.generate(), 'w') as file:
             for term in sorted(inverted_index.terms()):
                 document_ids = [str(document_id) for document_id in inverted_index.get(term).document_ids]

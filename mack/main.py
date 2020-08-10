@@ -1,5 +1,5 @@
 from mack import fs
-from mack import search
+from mack import inverted_index
 from mack import index_io
 import time
 
