@@ -148,3 +148,4 @@ mack/enron_mail_20150507
 mack/inverted_index_segments/*.index
 mack/*.index
 mack/inverted_index_lookup.txt
+mack/documentdb.txt

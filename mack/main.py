@@ -1,3 +1,4 @@
+from mack import documentdb
 from mack import fs
 from mack import inverted_index
 from mack import index_io
@@ -10,6 +11,7 @@ MERGED_INVERTED_INDEX_FILE = "merged_inverted_index.index"
 INDEX_LOOKUP_TABLE = "inverted_index_lookup.txt"
 SAMPLE_ENRON_DATA_SET = "enron"
 FULL_ENRON_DATA_SET = "enron_mail_20150507"
+DB_FILE = "documentdb.txt"
 
 
 def main():
@@ -60,9 +62,11 @@ def search(query):
 def build_index(data_set_path):
     writer = index_io.Writer(dest=SEGMENT_FILES_ROOT)
     index = inverted_index.DictionaryInvertedIndex()
+    db = documentdb.DocumentDB()
 
     for documents in fs.batch_read(data_set_path, 1000):
         for document in documents:
+            db.add(document.id, document)
             index.add(document)
         writer.write(index)
         index.clear()
@@ -71,6 +75,7 @@ def build_index(data_set_path):
 
     splitter = index_io.FileSplitter(dest=SEGMENT_FILES_ROOT, lookup_table_dest=INDEX_LOOKUP_TABLE)
     splitter.split(src=MERGED_INVERTED_INDEX_FILE, chunk_size=1048576)
+    db.save_to(dest=DB_FILE)
 
 
 if __name__ == "__main__":
