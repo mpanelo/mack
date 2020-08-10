@@ -15,13 +15,13 @@ def main():
 
 def build_index():
     writer = index_io.Writer(dest=SEGMENT_FILES_ROOT)
-    inverted_index = search.DictionaryInvertedIndex()
+    index = inverted_index.DictionaryInvertedIndex()
 
     for documents in fs.batch_read("enron", 1000):
         for document in documents:
-            inverted_index.add(document)
-        writer.write(inverted_index)
-        inverted_index.clear()
+            index.add(document)
+        writer.write(index)
+        index.clear()
 
     index_io.Merger.merge(src=SEGMENT_FILES_ROOT, dest=MERGED_INVERTED_INDEX_FILE)
 

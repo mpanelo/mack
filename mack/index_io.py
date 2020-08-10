@@ -24,10 +24,10 @@ class Writer:
         fs.clean_up_dir(dest)
         self.path_generator = UniquePathGenerator(dest)
 
-    def write(self, inverted_index: inverted_index.DictionaryInvertedIndex):
+    def write(self, index: inverted_index.DictionaryInvertedIndex):
         with open(self.path_generator.generate(), 'w') as file:
-            for term in sorted(inverted_index.terms()):
-                document_ids = [str(document_id) for document_id in inverted_index.get(term).document_ids]
+            for term in sorted(index.terms()):
+                document_ids = [str(document_id) for document_id in index.get(term).document_ids]
                 file.write("{};{}\n".format(term, ','.join(document_ids)))
 
 
