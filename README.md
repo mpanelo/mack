@@ -6,6 +6,7 @@ The unofficial Enron email corpus search engine.
 ### Pre-requites
 1. Install Python 3.5 or above
 2. Download and save the sample and full enron email corpus as `enron` and `enron_mail_20150507`, respectively.
+3. Create a virtual environment and activate it before installing MACK.
 
 Build and install the package.
 ```
