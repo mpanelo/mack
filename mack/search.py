@@ -15,9 +15,7 @@ class DictionaryInvertedIndex:
         return self._index.keys()
 
     def add(self, document):
-        tokens = Tokenizer.tokenize(document.text)
-
-        for token in tokens:
+        for token in Tokenizer.tokenize(document.text):
             if token not in self._index:
                 self._index[token] = TermRecord(document_ids=[])
 
@@ -34,15 +32,14 @@ class Tokenizer:
     @staticmethod
     def tokenize(text):
         i = 0
-        tokens = []
 
         while i < len(text):
             token = []
-            while i < len(text) and (text[i] in string.digits or text[i] in string.ascii_letters):
+
+            while i < len(text) and text[i].isalnum():
                 token.append(text[i])
                 i += 1
             if token:
-                tokens.append(''.join(token).lower())
-            i += 1
+                yield ''.join(token)
 
-        return tokens
+            i += 1
