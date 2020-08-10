@@ -3,6 +3,7 @@ from mack import fs
 from mack import inverted_index
 from mack import index_io
 from mack import parser
+from mack import prettyprint
 import time
 import argparse
 
@@ -48,6 +49,7 @@ def search(query):
     terms = list(parser.Tokenizer.tokenize(query))
     table = index_io.IndexLookupTable(src=INDEX_LOOKUP_TABLE)
     index = inverted_index.TrieInvertedIndex()
+    db = documentdb.DocumentDB.load_from(DB_FILE)
 
     for query_term in terms:
         segment_file = table[query_term]
@@ -56,7 +58,9 @@ def search(query):
 
     result = index.prefix_search(terms[0])
     for term, record in result:
-        print(term, record.document_ids)
+        # Only print the first three documents per term
+        # TODO Rank the documents for relevancy
+        prettyprint.print_search_result(term, db, record.document_ids[:3])
 
 
 def build_index(data_set_path):
