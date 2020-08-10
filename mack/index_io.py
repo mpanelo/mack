@@ -94,3 +94,43 @@ class Merger:
 
         serialized_document_ids = [str(document_id) for document_id in merged_document_ids]
         dest_file.write('{};{}\n'.format(buffer.term, ','.join(serialized_document_ids)))
+
+
+class FileSplitter:
+    def __init__(self, dest, lookup_table_dest="inverted_index_lookup.txt"):
+        fs.clean_up_file(lookup_table_dest)
+        fs.clean_up_dir(dest)
+        self.lookup_table_dest = lookup_table_dest
+        self.path_generator = UniquePathGenerator(dest)
+
+    def split(self, src, chunk_size):
+        lines = []
+        threshold = chunk_size
+
+        with open(src, 'r') as source_file:
+            while True:
+                line = source_file.readline()
+                if line == '':
+                    self.flush(lines)
+                    break
+
+                lines.append(line)
+
+                bytes_read = source_file.tell()
+                if bytes_read >= threshold:
+                    self.flush(lines)
+                    threshold = bytes_read + chunk_size
+                    lines = []
+
+    def flush(self, lines):
+        if not lines:
+            return
+
+        path = self.path_generator.generate()
+        term, _ = lines[0].split(';')
+
+        with open(path, 'w') as segment_file:
+            segment_file.writelines(line for line in lines)
+
+        with open(self.lookup_table_dest, 'a') as lookup_table_file:
+            lookup_table_file.write("{};{}\n".format(term, path))
