@@ -1,8 +1,42 @@
 from mack import inverted_index
 from mack import fs
+import bisect
 import collections
 import heapq
 import os
+
+
+class SegmentLoader:
+    @staticmethod
+    def load(path):
+        segment = []
+        with open(path, 'r') as file:
+            for line in file:
+                term, serialized_record = line.rstrip().split(';')
+                record = inverted_index.TermRecord.deserialize(serialized_record)
+                segment.append((term, record))
+        return segment
+
+
+class IndexLookupTable:
+    def __init__(self, src):
+        if not os.path.exists(src) or not os.path.isfile(src):
+            raise IOError("'{}' is not a file or does not exist".format(src))
+        self.lookup_table = IndexLookupTable._load_lookup_table(src)
+
+    @staticmethod
+    def _load_lookup_table(src):
+        lookup_table = []
+        with open(src, 'r') as file:
+            for line in file:
+                term, path = line.rstrip().split(';')
+                lookup_table.append((term, path))
+        return lookup_table
+
+    def __getitem__(self, term):
+        terms, segment_files = zip(*self.lookup_table)
+        index = bisect.bisect_left(terms, term)
+        return segment_files[index]
 
 
 class UniquePathGenerator:
@@ -58,7 +92,7 @@ class Merger:
 
         while min_heap:
             line, file = heapq.heappop(min_heap)
-            term, serialized_record = line.split(';')
+            term, serialized_record = line.rstrip().split(';')
             record = inverted_index.TermRecord.deserialize(serialized_record)
 
             if buffer is None:
@@ -124,7 +158,7 @@ class FileSplitter:
             return
 
         path = self.path_generator.generate()
-        term, _ = lines[0].split(';')
+        term, _ = lines[0].rstrip().split(';')
 
         with open(path, 'w') as segment_file:
             segment_file.writelines(line for line in lines)
