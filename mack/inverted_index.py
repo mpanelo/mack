@@ -1,7 +1,19 @@
 from mack import parser
-import collections
 
-TermRecord = collections.namedtuple('TermRecord', 'document_ids')
+
+class TermRecord:
+    @classmethod
+    def deserialize(cls, serialization):
+        return cls(document_ids=[int(document_id) for document_id in serialization.split(',')])
+
+    def __init__(self, document_ids=None):
+        if document_ids is None:
+            self.document_ids = []
+        else:
+            self.document_ids = document_ids
+
+    def serialize(self):
+        return ','.join([str(document_id) for document_id in self.document_ids])
 
 
 class DictionaryInvertedIndex:

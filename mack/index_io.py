@@ -27,8 +27,8 @@ class Writer:
     def write(self, index: inverted_index.DictionaryInvertedIndex):
         with open(self.path_generator.generate(), 'w') as file:
             for term in sorted(index.terms()):
-                document_ids = [str(document_id) for document_id in index.get(term).document_ids]
-                file.write("{};{}\n".format(term, ','.join(document_ids)))
+                record = index.get(term)
+                file.write("{};{}\n".format(term, record.serialize()))
 
 
 class Merger:
@@ -58,15 +58,16 @@ class Merger:
 
         while min_heap:
             line, file = heapq.heappop(min_heap)
-            term, serialized_document_ids = line.split(';')
+            term, serialized_record = line.split(';')
+            record = inverted_index.TermRecord.deserialize(serialized_record)
 
             if buffer is None:
-                buffer = Merger.Buffer(term, document_id_groups=[Merger._deserialize(serialized_document_ids)])
+                buffer = Merger.Buffer(term, document_id_groups=[record.document_ids])
             elif buffer.term == term:
-                buffer.document_id_groups.append(Merger._deserialize(serialized_document_ids))
+                buffer.document_id_groups.append(record.document_ids)
             else:
                 Merger._write_buffer(dest_file, buffer)
-                buffer = Merger.Buffer(term, document_id_groups=[Merger._deserialize(serialized_document_ids)])
+                buffer = Merger.Buffer(term, document_id_groups=[record.document_ids])
 
             next_line = file.readline().rstrip()
             if next_line != '':
@@ -76,10 +77,6 @@ class Merger:
 
         if buffer is not None:
             Merger._write_buffer(dest_file, buffer)
-
-    @staticmethod
-    def _deserialize(document_ids):
-        return [int(document_id) for document_id in document_ids.split(',')]
 
     @staticmethod
     def _write_buffer(dest_file, buffer):
@@ -97,7 +94,7 @@ class Merger:
 
 
 class FileSplitter:
-    def __init__(self, dest, lookup_table_dest="inverted_index_lookup.txt"):
+    def __init__(self, dest, lookup_table_dest):
         fs.clean_up_file(lookup_table_dest)
         fs.clean_up_dir(dest)
         self.lookup_table_dest = lookup_table_dest
