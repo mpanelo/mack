@@ -4,8 +4,18 @@ The unofficial Enron email corpus search engine.
 ## Installing / Running
 
 ### Pre-requites
-1. Store the sample and full size Enron email corpus in the `mack` directory. They should be named `enron` and `enron_mail_20150507`, respectively.
-2. Install Python 3.5 or above
+1. Install Python 3.5 or above
+2. Download and save the sample and full enron email corpus as `enron` and `enron_mail_20150507`, respectively.
+
+Build and install the package.
+```
+python setup.py build && python setup.py install
+```
+
+Run MACK. Make sure to run MACK in the same directory where the email corpus is located.
+```
+mack --search app
+```
 
 ## What's next?
 - MOAR UNIT TESTS. The unit test coverage is very low, and I would want to get that at 100%.
