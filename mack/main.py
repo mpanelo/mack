@@ -43,7 +43,7 @@ def parse_args():
 
 
 def search(query):
-    terms = parser.Tokenizer.tokenize(query)
+    terms = list(parser.Tokenizer.tokenize(query))
     table = index_io.IndexLookupTable(src=INDEX_LOOKUP_TABLE)
     index = inverted_index.TrieInvertedIndex()
 
@@ -52,7 +52,9 @@ def search(query):
         for term, record in index_io.SegmentLoader.load(segment_file):
             index.insert(term, record)
 
-    return index.prefix_search(terms[0])
+    result = index.prefix_search(terms[0])
+    for term, record in result:
+        print(term, record.document_ids)
 
 
 def build_index(data_set_path):
