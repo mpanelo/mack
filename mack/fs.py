@@ -15,7 +15,7 @@ def batch_read(root, batch_size=100):
         batch_file_names = file_names[i:i+batch_size]
         documents = []
         for file_name in batch_file_names:
-            with open(file_name) as file:
+            with open(file_name, 'r', encoding='cp1252') as file:
                 documents.append(Document(id=counter, name=file_name, text=file.read()))
             counter += 1
         yield documents
