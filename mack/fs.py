@@ -1,6 +1,6 @@
-import os
 from collections import namedtuple
-
+import os
+import shutil
 
 Document = namedtuple("Document", "id name text")
 
@@ -19,3 +19,18 @@ def batch_read(root, batch_size=100):
                 documents.append(Document(id=counter, name=file_name, text=file.read()))
             counter += 1
         yield documents
+
+
+def clean_up_dir(dir_path):
+    if os.path.exists(dir_path):
+        if not os.path.isdir(dir_path):
+            raise IOError("Unable to remove '{}' because it is not a directory")
+        shutil.rmtree(dir_path)
+        os.mkdir(dir_path)
+
+
+def clean_up_file(file_path):
+    if os.path.exists(file_path):
+        if not os.path.isfile(file_path):
+            raise IOError("Unable to remove '{}' because it is not a file")
+        os.remove(file_path)
