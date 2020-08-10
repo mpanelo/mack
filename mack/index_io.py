@@ -35,8 +35,8 @@ class IndexLookupTable:
 
     def __getitem__(self, term):
         terms, segment_files = zip(*self.lookup_table)
-        index = bisect.bisect_left(terms, term)
-        return segment_files[index]
+        index = bisect.bisect_right(terms, term)
+        return segment_files[index-1]
 
 
 class UniquePathGenerator:
@@ -152,6 +152,7 @@ class FileSplitter:
                     self.flush(lines)
                     threshold = bytes_read + chunk_size
                     lines = []
+        os.remove(src)
 
     def flush(self, lines):
         if not lines:

@@ -16,7 +16,7 @@ class IndexLookupTableTest(unittest.TestCase):
     def setUp(self):
         self.filename = "tmp_lookup_table.txt"
         with open(self.filename, "w") as file:
-            file.writelines("{};{}\n".format(char, i) for i, char in enumerate("abcdefgh"))
+            file.writelines("{};{}\n".format(char, i) for i, char in enumerate("aceg"))
 
     def tearDown(self):
         os.remove(self.filename)
@@ -24,6 +24,6 @@ class IndexLookupTableTest(unittest.TestCase):
     def test_lookup(self):
         table = index_io.IndexLookupTable(src=self.filename)
 
-        for i, key in enumerate("abcdefgh"):
+        for i, key in enumerate("bdfh"):
             segment_file_name = table[key]
             self.assertEqual(str(i), segment_file_name)
