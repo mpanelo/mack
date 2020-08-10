@@ -26,7 +26,7 @@ def clean_up_dir(dir_path):
         if not os.path.isdir(dir_path):
             raise IOError("Unable to remove '{}' because it is not a directory")
         shutil.rmtree(dir_path)
-        os.mkdir(dir_path)
+    os.mkdir(dir_path)
 
 
 def clean_up_file(file_path):

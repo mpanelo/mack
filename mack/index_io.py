@@ -48,7 +48,7 @@ class Merger:
     @staticmethod
     def _initialize_min_heap(src):
         min_heap = []
-        for segment_file in (open(path) for path in os.listdir(src)):
+        for segment_file in (open(os.path.join(src, path)) for path in os.listdir(src)):
             heapq.heappush(min_heap, (segment_file.readline().rstrip(), segment_file))
         return min_heap
 
