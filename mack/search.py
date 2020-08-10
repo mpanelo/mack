@@ -15,11 +15,11 @@ class DictionaryInvertedIndex:
         return self._index.keys()
 
     def add(self, document):
-        for token in parser.Tokenizer.tokenize(document.text):
-            if token not in self._index:
-                self._index[token] = TermRecord(document_ids=[])
+        for term in parser.Tokenizer.tokenize(document.text):
+            if term not in self._index:
+                self._index[term] = TermRecord(document_ids=[])
 
-            term_record = self._index[token]
+            term_record = self._index[term]
 
             if not term_record.document_ids or term_record.document_ids[-1] != document.id:
                 term_record.document_ids.append(document.id)
