@@ -1,4 +1,4 @@
-import string
+from mack import parser
 import collections
 
 TermRecord = collections.namedtuple('TermRecord', 'document_ids')
@@ -15,7 +15,7 @@ class DictionaryInvertedIndex:
         return self._index.keys()
 
     def add(self, document):
-        for token in Tokenizer.tokenize(document.text):
+        for token in parser.Tokenizer.tokenize(document.text):
             if token not in self._index:
                 self._index[token] = TermRecord(document_ids=[])
 
@@ -27,19 +27,3 @@ class DictionaryInvertedIndex:
     def clear(self):
         self._index.clear()
 
-
-class Tokenizer:
-    @staticmethod
-    def tokenize(text):
-        i = 0
-
-        while i < len(text):
-            token = []
-
-            while i < len(text) and text[i].isalnum():
-                token.append(text[i])
-                i += 1
-            if token:
-                yield ''.join(token)
-
-            i += 1
